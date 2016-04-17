@@ -1,0 +1,31 @@
+@font-face {
+  font-family: Roboto-Medium;
+  src: url(fonts/Roboto-Medium.woff);
+}
+@font-face {
+  font-family: Roboto-Thin;
+  src: url(fonts/Roboto-Thin.woff);
+}
+@font-face {
+  font-family: Roboto-Bold;
+  src: url(fonts/Roboto-Bold.woff);
+}
+@font-face {
+  font-family: Roboto-Regular;
+  src: url(fonts/Roboto-Regular.woff);
+}
+
+
+@mixin flex($direction) {
+  display: flex;
+  flex-direction: $direction;
+}
+
+@mixin flex-align($primary, $secondary) {
+  justify-content: $primary;
+  align-items: $secondary;
+}
+
+@mixin flex-space-center() {
+  @include flex-align(space-around, center);
+}

@@ -1,0 +1,10 @@
+$bg-color: #B9B9BF;
+$main-color: #222;
+$style-color: darkCyan;
+$font-stack: Roboto-Regular;
+$font-title: Roboto-Bold;
+$font-subtitle: Roboto-Medium;
+$font-quote: Roboto-Thin;
+
+$darker-bg: darken($bg-color, 70%);
+$lighter-color: lighten($main-color, 70%);

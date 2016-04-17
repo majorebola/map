@@ -1,0 +1,37 @@
+@import 'config';
+@import 'mixins';
+
+body {
+  font-family: $font-stack;
+  margin: 0 auto;
+
+  #main-container {
+    background-color: $bg-color;
+    height: 100vh;
+    width: 100%;
+    @include flex(row);
+
+    #toolbar {
+      height: 100vh;
+      flex: 20;
+
+      #list-places {
+        margin: 1em 0.5em 2em;
+
+        .search-box {
+          line-height: 2em;
+          background: transparent;
+          border: none;
+          border-bottom: 1px solid $style-color;
+          font-family: $font-subtitle;
+          color: $style-color;
+          width: 100%;
+        }
+      }
+    }
+    #map {
+      height: 100vh;
+      flex: 80;
+    }
+  }
+}
