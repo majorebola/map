@@ -1,0 +1,40 @@
+@font-face {
+  font-family: Roboto-Medium;
+  src: url(fonts/Roboto-Medium.woff); }
+@font-face {
+  font-family: Roboto-Thin;
+  src: url(fonts/Roboto-Thin.woff); }
+@font-face {
+  font-family: Roboto-Bold;
+  src: url(fonts/Roboto-Bold.woff); }
+@font-face {
+  font-family: Roboto-Regular;
+  src: url(fonts/Roboto-Regular.woff); }
+body {
+  font-family: Roboto-Regular;
+  margin: 0 auto; }
+  body #main-container {
+    background-color: #B9B9BF;
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: row; }
+    body #main-container #toolbar {
+      height: 100vh;
+      flex: 20; }
+      body #main-container #toolbar #list-places {
+        margin: 1em 0.5em 2em; }
+        body #main-container #toolbar #list-places .search-box {
+          line-height: 2em;
+          margin: 0.5em 0;
+          background: transparent;
+          border: none;
+          border-bottom: 1px solid darkCyan;
+          font-family: Roboto-Medium;
+          color: darkCyan;
+          width: 100%; }
+    body #main-container #map {
+      height: 100vh;
+      flex: 80; }
+
+/*# sourceMappingURL=style.css.map */
