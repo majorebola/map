@@ -8,12 +8,15 @@ var mapElement;
 var index;
 var searchBoxes = [];
 var markers = [];
+var directionsService;
+
 
 var initMap = function() {
     console.log("init Map");
     mapElement = document.getElementById('map');
 
-    index = 0;
+    index = -1;
+    directionsService = new google.maps.DirectionsService();
 
     map = new google.maps.Map(mapElement, {
         center: {lat: 45.05, lng: 7.65},
@@ -21,10 +24,10 @@ var initMap = function() {
     });
     toolbar = document.getElementById('toolbar');
     listPlaces = document.getElementById('list-places');
-    createSearchBox(listPlaces, index);
 };
 
 var createSearchBox = function(parent, index) {
+    console.log(index);
     var input = document.createElement('input');
     input.setAttribute('type', 'text');
     input.setAttribute('placeholder', 'Search Box');
@@ -32,43 +35,89 @@ var createSearchBox = function(parent, index) {
 
     parent.appendChild(input);
     searchBoxes[index] = new google.maps.places.SearchBox(input);
+    searchBoxes[index].index = index;
 
     addSearchBoxListenerChanged(searchBoxes[index]);
-    return searchBoxes[++index];
+    return searchBoxes[index];
 };
 
 
 var addSearchBoxListenerChanged = function(searchBox) {
     searchBox.addListener('places_changed', function() {
         var places = searchBox.getPlaces();
-        if (places.length == 0) {
-            return;
+
+        switch(places.length) {
+            case 0:
+                alert("No point found");
+                break;
+            case 1:
+                addMarkerAndCreatePath(places[0], searchBox.index);
+                break;
+            default:
+                alert("Too many points found");
+                break;
         }
+    });
+};
 
-        // Clear out the old markers.
-        markers.forEach(function(marker) {
-            marker.setMap(null);
-        });
-        markers = [];
+var addMarkerAndCreatePath = function(place, index) {
+    // For each place, get the icon, name and location.
+    var bounds = new google.maps.LatLngBounds();
 
-        // For each place, get the icon, name and location.
-        var bounds = new google.maps.LatLngBounds();
-        places.forEach(function(place) {
-            // Create a marker for each place.
-            markers.push(new google.maps.Marker({
-                map: map,
-                title: place.name,
-                position: place.geometry.location
-            }));
-
-            if (place.geometry.viewport) {
-                // Only geocodes have viewport.
-                bounds.union(place.geometry.viewport);
-            } else {
-                bounds.extend(place.geometry.location);
-            }
-        });
-        map.fitBounds(bounds);
+    markers[index] = new google.maps.Marker({
+        map: map,
+        title: place.name,
+        position: place.geometry.location
     });
 
+    if(markers.length >= 2 && index > 1) {
+        createPath(index);
+    }
+};
+
+var createPath = function(index) {
+    console.log("PANIC MONSTER");
+
+    directionsService.route({
+        origin: markers[index-1].getPosition(),
+        destination: markers[index].getPosition(),
+        travelMode: google.maps.DirectionsTravelMode.DRIVING
+    }, function(result, status) {
+        console.log(index + " | " + status);
+        if (status == google.maps.DirectionsStatus.OK) {
+            for (var i = 0, len = result.routes[0].overview_path.length; i < len; i++) {
+                path.push(result.routes[0].overview_path[i]);
+            }
+            var length = result.routes[0].overview_path.length;
+
+            drawPath(result.routes[0].overview_path, whenDestinationReached);
+            window.setTimeout(function() {
+                routifyInternal(index+1);
+            }, 999);
+        }
+    });
+};
+
+var drawPath = function(pathToDraw, destinationReached) {
+    var index = 0;
+    var timeToWait = 1000 / pathToDraw.length;
+    var path = new google.maps.MVCArray();
+    map.setCenter({'lat': 46.5246986, 'lng': 43.0680423});
+    map.setZoom(4);
+    var interval = window.setInterval(function() {
+        if(index < pathToDraw.length) {
+            path.push(pathToDraw[index]);
+            poly.setPath(path);
+            poly.setMap(map);
+            index++;
+        } else {
+            window.clearInterval(interval);
+            destinationReached(poly);
+        }
+    }, timeToWait);
+};
+
+var addPoint = function() {
+    createSearchBox(listPlaces, index);
+    index++;
 };
