@@ -1,27 +1,35 @@
 'use strict';
 const GENERATOR_TIMER = 1000;
 
-var map;
-var toolbar;
-var listPlaces;
-var mapElement;
-var index;
-var searchBoxes = [];
-var markers = [];
-var directionsService;
+var map;                    // google map
+var mapElement;             // map element where google map instanciates
+var toolbar;                // toolbar element where drawing searchboxes
+var listPlaces;             // searchBoxes container
+var searchBoxes = [];       // searchBoxes elements of google map
 
+var index;                  // an index, maybe useless
+var markers = [];           // markers elements of the google map
+var directionsService;      // directions Service for getting the path
+var path;                   // path from google maps
+var poly;                   // polyline used for drawing the path
 
 var initMap = function() {
-    console.log("init Map");
+    console.log("initialization of everything");
     mapElement = document.getElementById('map');
 
     index = -1;
     directionsService = new google.maps.DirectionsService();
-
     map = new google.maps.Map(mapElement, {
         center: {lat: 45.05, lng: 7.65},
         zoom: 11
     });
+    path = new google.maps.MVCArray();
+    poly = new google.maps.Polyline({
+        strokeColor: '#DE4343',
+        strokeWeight: 3,
+        map: map
+    });
+
     toolbar = document.getElementById('toolbar');
     listPlaces = document.getElementById('list-places');
 };
@@ -70,14 +78,13 @@ var addMarkerAndCreatePath = function(place, index) {
         position: place.geometry.location
     });
 
-    if(markers.length >= 2 && index > 1) {
+    if(markers.length > 1) {
         createPath(index);
     }
 };
 
 var createPath = function(index) {
     console.log("PANIC MONSTER");
-
     directionsService.route({
         origin: markers[index-1].getPosition(),
         destination: markers[index].getPosition(),
@@ -88,36 +95,21 @@ var createPath = function(index) {
             for (var i = 0, len = result.routes[0].overview_path.length; i < len; i++) {
                 path.push(result.routes[0].overview_path[i]);
             }
-            var length = result.routes[0].overview_path.length;
+            var inpath = result.routes[0].overview_path;
+            var length = inpath.length;
+            var tpath = poly.getPath();
 
-            drawPath(result.routes[0].overview_path, whenDestinationReached);
-            window.setTimeout(function() {
-                routifyInternal(index+1);
-            }, 999);
+            for (var i = 0; i < length; i++) {
+                tpath.push(inpath[i]);
+            }
+            debugger;
+            poly.setPath(tpath);
+            poly.setMap(map);
         }
     });
 };
 
-var drawPath = function(pathToDraw, destinationReached) {
-    var index = 0;
-    var timeToWait = 1000 / pathToDraw.length;
-    var path = new google.maps.MVCArray();
-    map.setCenter({'lat': 46.5246986, 'lng': 43.0680423});
-    map.setZoom(4);
-    var interval = window.setInterval(function() {
-        if(index < pathToDraw.length) {
-            path.push(pathToDraw[index]);
-            poly.setPath(path);
-            poly.setMap(map);
-            index++;
-        } else {
-            window.clearInterval(interval);
-            destinationReached(poly);
-        }
-    }, timeToWait);
-};
-
 var addPoint = function() {
-    createSearchBox(listPlaces, index);
     index++;
+    createSearchBox(listPlaces, index);
 };
