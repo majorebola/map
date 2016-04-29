@@ -70,13 +70,16 @@ var addSearchBoxListenerChanged = function(searchBox) {
 
 var addMarkerAndCreatePath = function(place, index) {
     // For each place, get the icon, name and location.
-    var bounds = new google.maps.LatLngBounds();
+    var bounds = map.getBounds();
 
     markers[index] = new google.maps.Marker({
         map: map,
         title: place.name,
         position: place.geometry.location
     });
+
+    bounds.extends(place.geometry.location);
+    map.fitBounds(bounds);
 
     if(markers.length > 1) {
         createPath(index);
