@@ -82,7 +82,7 @@ var addMarkerAndCreatePath = function(place, index) {
     if (markers.length > 1) {
         bounds = map.getBounds();
     } 
-    bounds.extends(place.geometry.location);
+    bounds.extend(place.geometry.location);
 
     // set bounds
     map.fitBounds(bounds);
