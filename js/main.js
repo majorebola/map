@@ -109,14 +109,17 @@ var createPath = function(index) {
     });
 };
 
+/*
+Big bad method that shows distances and duration.
+*/
 var addTravelDatas = function(leg) {
     var totalDistanceElement = document.getElementById('total-distance');
     var totalDurationElement = document.getElementById('total-duration');
     var totalDistanceUnitElement = document.getElementById('total-distance-unit');
     var totalDurationUnitElement = document.getElementById('total-duration-unit');
 
-    var totalDistance = parseInt(totalDistanceElement.innerHTML);
-    var totalDuration = parseInt(totalDurationElement.innerHTML);
+    var totalDistance = parseFloat(totalDistanceElement.innerHTML);
+    var totalDuration = parseFloat(totalDurationElement.innerHTML);
     var totalDistanceUnit = totalDistanceUnitElement.innerHTML;
     var totalDurationUnit = totalDurationUnitElement.innerHTML;
 
@@ -151,8 +154,8 @@ var addTravelDatas = function(leg) {
         totalDurationUnit = "hours";
     }
 
-    totalDistanceElement.innerHTML = totalDistance;
-    totalDurationElement.innerHTML = totalDuration;
+    totalDistanceElement.innerHTML = totalDistance.toFixed(2);
+    totalDurationElement.innerHTML = totalDuration.toFixed(2);
     totalDistanceUnitElement.innerHTML = totalDistanceUnit;
     totalDurationUnitElement.innerHTML = totalDurationUnit;
 };
