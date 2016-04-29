@@ -78,7 +78,7 @@ var addMarkerAndCreatePath = function(place, index) {
     });
 
     // calculate bounds
-    var bounds = new maps.google.LatLngBounds();
+    var bounds = new google.maps.LatLngBounds();
     if (makers.length > 1) {
         bounds = map.getBounds();
     } 
