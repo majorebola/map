@@ -79,7 +79,7 @@ var addMarkerAndCreatePath = function(place, index) {
 
     // calculate bounds
     var bounds = new google.maps.LatLngBounds();
-    if (makers.length > 1) {
+    if (markers.length > 1) {
         bounds = map.getBounds();
     } 
     bounds.extends(place.geometry.location);
