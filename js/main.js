@@ -69,18 +69,25 @@ var addSearchBoxListenerChanged = function(searchBox) {
 };
 
 var addMarkerAndCreatePath = function(place, index) {
-    // For each place, get the icon, name and location.
-    var bounds = map.getBounds();
 
+    // create the marker
     markers[index] = new google.maps.Marker({
         map: map,
         title: place.name,
         position: place.geometry.location
     });
 
+    // calculate bounds
+    var bounds = new maps.google.LatLngBounds();
+    if (makers.length > 1) {
+        bounds = map.getBounds();
+    } 
     bounds.extends(place.geometry.location);
+
+    // set bounds
     map.fitBounds(bounds);
 
+    // calculate path
     if(markers.length > 1) {
         createPath(index);
     }
