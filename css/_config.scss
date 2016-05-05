@@ -1,4 +1,4 @@
-$bg-color: #B9B9BF;
+$bg-color: #b9b9bf;
 $main-color: #222;
 $style-color: darkCyan;
 $font-stack: Roboto-Regular;
@@ -8,3 +8,6 @@ $font-quote: Roboto-Thin;
 
 $darker-bg: darken($bg-color, 70%);
 $lighter-color: lighten($main-color, 70%);
+
+// search-box line height and icon height. Defines the height of all the searchboxes added
+$search-box-height: 2em;

@@ -12,27 +12,36 @@ body {
     @include flex(row);
 
     #toolbar {
-      height: 100vh;
       flex: 20;
+      height: 100vh;
 
       #list-places {
-        margin: 1em 0.5em 2em;
+        margin: 1em .5em 2em;
 
+        .search-box-container {
+          @include flex(row);
+        }
         .search-box {
-          line-height: 2em;
-          margin: 0.5em 0;
           background: transparent;
-          border: none;
+          border: 0;
           border-bottom: 1px solid $style-color;
-          font-family: $font-subtitle;
           color: $style-color;
-          width: 100%;
+          font-family: $font-subtitle;
+          line-height: $search-box-height;
+          margin: .5em 0;
+        }
+        .cross-delete {
+          background: url('imgs/cancel.svg') center no-repeat;
+          background-size: contain;
+          height: $search-box-height;
+          right: 0;
+          width: 20px;
         }
       }
     }
     #map {
-      height: 100vh;
       flex: 80;
+      height: 100vh;
     }
   }
 }

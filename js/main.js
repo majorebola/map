@@ -35,18 +35,24 @@ var initMap = function() {
 };
 
 var createSearchBox = function(parent, index) {
-    console.log(index);
-    var input = document.createElement('input');
-    input.setAttribute('type', 'text');
-    input.setAttribute('placeholder', 'Search Box');
-    input.classList.add('search-box');
 
-    parent.appendChild(input);
-    searchBoxes[index] = new google.maps.places.SearchBox(input);
-    searchBoxes[index].index = index;
+    var id = index;
+    var templateData = {
+        id: id
+    };
 
-    addSearchBoxListenerChanged(searchBoxes[index]);
-    return searchBoxes[index];
+    $("<div>", {id: 'template-mustache'}).appendTo('body');
+    $('#template-mustache').load("parts/search-box.html", function() {
+        var html = Mustache.to_html(document.getElementById("search-box-template").innerHTML, templateData);
+        parent.innerHTML += html;
+
+        var input = document.getElementById("sb-" + id);
+
+        searchBoxes[index] = new google.maps.places.SearchBox(input);
+        searchBoxes[index].index = index;
+
+        addSearchBoxListenerChanged(searchBoxes[index]);
+    });
 };
 
 
@@ -78,19 +84,23 @@ var addMarkerAndCreatePath = function(place, index) {
     });
 
     // calculate bounds
-    var bounds = new google.maps.LatLngBounds();
-    if (markers.length > 1) {
-        bounds = map.getBounds();
-    } 
-    bounds.extend(place.geometry.location);
-
-    // set bounds
-    map.fitBounds(bounds);
+    updateBounds(place);
 
     // calculate path
     if(markers.length > 1) {
         createPath(index);
     }
+};
+
+var updateBounds = function(place) {
+    var bounds = new google.maps.LatLngBounds();
+    if (markers.length > 1) {
+        bounds = map.getBounds();
+    }
+    bounds.extend(place.geometry.location);
+
+    // set bounds
+    map.fitBounds(bounds);
 };
 
 var createPath = function(index) {
@@ -170,7 +180,27 @@ var addTravelDatas = function(leg) {
     totalDurationUnitElement.innerHTML = totalDurationUnit;
 };
 
+// LISTENERS
 var addPoint = function() {
     index++;
     createSearchBox(listPlaces, index);
 };
+var removePoint = function(element) {
+    var id = $(element).data('id');
+    $("#sbc-" + id).remove();
+    if (markers[id]) {
+        markers[id].setMap(null);
+        markers.splice(id,1);
+    }
+    /*
+    TODO: I M P O R T A N T ! ! Recalculate Path.
+    TODO: Path should be loaded in an array (createPath function).
+    TODO: so that we can get previous and next path, delete them and insert new path (from previous to next)
+    */
+};
+
+
+$(function(){
+    $('#add-place').click(addPoint);
+});
+
