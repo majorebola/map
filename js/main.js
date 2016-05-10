@@ -110,11 +110,11 @@ var updateBounds = function(place) {
     map.fitBounds(bounds);
 };
 
-var createPath = function(index) {
+var calculatePath = function(start, end, callback) {
     console.log("PANIC MONSTER");
     directionsService.route({
-        origin: markers[index-1].getPosition(),
-        destination: markers[index].getPosition(),
+        origin: start,
+        destination: end,
         travelMode: google.maps.DirectionsTravelMode.DRIVING
     }, function(result, status) {
         var innerPath = new google.maps.MVCArray();
@@ -123,21 +123,22 @@ var createPath = function(index) {
             for (var i = 0, len = result.routes[0].overview_path.length; i < len; i++) {
                 innerPath.push(result.routes[0].overview_path[i]);
             }
-            path[index] = innerPath;
-
-            drawPath(path[index]);
-            // var inpath = result.routes[0].overview_path;
-            // var length = inpath.length;
-            // var tpath = poly.getPath();
-            //
-            // for (var i = 0; i < length; i++) {
-            //     tpath.push(inpath[i]);
-            // }
-            // poly.setPath(tpath);
-            // poly.setMap(map);
-            addTravelDatas(result.routes[0].legs[0]);
+            callback(innerPath, result);
         }
     });
+};
+
+var createPath = function(index) {
+
+    var callback = function(innerPath, result) {
+        path[index] = innerPath;
+
+        drawPath(path[index]);
+
+        addTravelDatas(result.routes[0].legs[0]);
+    };
+
+    calculatePath(markers[index-1].getPosition(), markers[index].getPosition(), callback);
 };
 
 var drawPath = function(innerPath) {
@@ -214,8 +215,8 @@ var removePoint = function(element) {
     }
     /*
     TODO: I M P O R T A N T ! ! Recalculate Path.
-    TODO: Path should be loaded in an array (createPath function).
-    TODO: so that we can get previous and next path, delete them and insert new path (from previous to next)
+
+    TODO: get previous and next path, delete them and calculate new path (from previous to next)
     */
 };
 
