@@ -10,8 +10,18 @@ var searchBoxes = [];       // searchBoxes elements of google map
 var index;                  // an index, maybe useless
 var markers = [];           // markers elements of the google map
 var directionsService;      // directions Service for getting the path
-var path;                   // path from google maps
+var path = {};              // path object (list) from google maps
 var poly;                   // polyline used for drawing the path
+
+
+// main data with all useful infos: marker, searchbox and path.
+var data = [
+    {
+        marker: {},
+        searchBox: {},
+        path: {}
+    }
+];
 
 var initMap = function() {
     console.log("initialization of everything");
@@ -23,7 +33,6 @@ var initMap = function() {
         center: {lat: 45.05, lng: 7.65},
         zoom: 11
     });
-    path = new google.maps.MVCArray();
     poly = new google.maps.Polyline({
         strokeColor: '#DE4343',
         strokeWeight: 3,
@@ -44,7 +53,7 @@ var createSearchBox = function(parent, index) {
     $("<div>", {id: 'template-mustache'}).appendTo('body');
     $('#template-mustache').load("parts/search-box.html", function() {
         var html = Mustache.to_html(document.getElementById("search-box-template").innerHTML, templateData);
-        parent.innerHTML += html;
+        $(parent).append(html);
 
         var input = document.getElementById("sb-" + id);
 
@@ -59,29 +68,19 @@ var createSearchBox = function(parent, index) {
 var addSearchBoxListenerChanged = function(searchBox) {
     searchBox.addListener('places_changed', function() {
         var places = searchBox.getPlaces();
-
-        switch(places.length) {
-            case 0:
-                alert("No point found");
-                break;
-            case 1:
-                addMarkerAndCreatePath(places[0], searchBox.index);
-                break;
-            default:
-                alert("Too many points found");
-                break;
+        if(places.length == 1) {
+            addMarkerAndCreatePath(places[0], searchBox.index);
+        } else if(places.length == 0){
+            alert("No point found");
+        } else {
+            alert("Too many points found");
         }
     });
 };
 
 var addMarkerAndCreatePath = function(place, index) {
-
     // create the marker
-    markers[index] = new google.maps.Marker({
-        map: map,
-        title: place.name,
-        position: place.geometry.location
-    });
+    markers[index] = createMarker(place);
 
     // calculate bounds
     updateBounds(place);
@@ -90,6 +89,14 @@ var addMarkerAndCreatePath = function(place, index) {
     if(markers.length > 1) {
         createPath(index);
     }
+};
+
+var createMarker = function(place) {
+    return new google.maps.Marker({
+        map: map,
+        title: place.name,
+        position: place.geometry.location
+    });
 };
 
 var updateBounds = function(place) {
@@ -110,23 +117,36 @@ var createPath = function(index) {
         destination: markers[index].getPosition(),
         travelMode: google.maps.DirectionsTravelMode.DRIVING
     }, function(result, status) {
+        var innerPath = new google.maps.MVCArray();
         console.log(index + " | " + status);
         if (status == google.maps.DirectionsStatus.OK) {
             for (var i = 0, len = result.routes[0].overview_path.length; i < len; i++) {
-                path.push(result.routes[0].overview_path[i]);
+                innerPath.push(result.routes[0].overview_path[i]);
             }
-            var inpath = result.routes[0].overview_path;
-            var length = inpath.length;
-            var tpath = poly.getPath();
+            path[index] = innerPath;
 
-            for (var i = 0; i < length; i++) {
-                tpath.push(inpath[i]);
-            }
-            poly.setPath(tpath);
-            poly.setMap(map);
+            drawPath(path[index]);
+            // var inpath = result.routes[0].overview_path;
+            // var length = inpath.length;
+            // var tpath = poly.getPath();
+            //
+            // for (var i = 0; i < length; i++) {
+            //     tpath.push(inpath[i]);
+            // }
+            // poly.setPath(tpath);
+            // poly.setMap(map);
             addTravelDatas(result.routes[0].legs[0]);
         }
     });
+};
+
+var drawPath = function(innerPath) {
+    var tpath = poly.getPath();
+    for (var i = 1; i < innerPath.length; i++) {
+        tpath.push(innerPath.getAt(i));
+    }
+    poly.setPath(tpath);
+    poly.setMap(map);
 };
 
 /*
