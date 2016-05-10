@@ -64,7 +64,6 @@ var createSearchBox = function(parent, index) {
     });
 };
 
-
 var addSearchBoxListenerChanged = function(searchBox) {
     searchBox.addListener('places_changed', function() {
         var places = searchBox.getPlaces();
@@ -110,6 +109,13 @@ var updateBounds = function(place) {
     map.fitBounds(bounds);
 };
 
+/**
+ * Calculate Path between Start and End. calls a callback with the result (if OK)
+ * TODO: better handling of errors.
+ * @param start
+ * @param end
+ * @param callback
+ */
 var calculatePath = function(start, end, callback) {
     console.log("PANIC MONSTER");
     directionsService.route({
@@ -117,23 +123,28 @@ var calculatePath = function(start, end, callback) {
         destination: end,
         travelMode: google.maps.DirectionsTravelMode.DRIVING
     }, function(result, status) {
-        var innerPath = new google.maps.MVCArray();
-        console.log(index + " | " + status);
         if (status == google.maps.DirectionsStatus.OK) {
-            for (var i = 0, len = result.routes[0].overview_path.length; i < len; i++) {
-                innerPath.push(result.routes[0].overview_path[i]);
-            }
-            callback(innerPath, result);
+            callback(result);
+        } else {
+            console.log("error");
         }
     });
 };
 
+var buildPath = function(result) {
+    var innerPath = new google.maps.MVCArray();
+    for (var i = 0, len = result.routes[0].overview_path.length; i < len; i++) {
+        innerPath.push(result.routes[0].overview_path[i]);
+    }
+    return innerPath;
+};
+
 var createPath = function(index) {
 
-    var callback = function(innerPath, result) {
-        path[index] = innerPath;
+    var callback = function(result) {
+        path[index] = buildPath(result);
 
-        drawPath(path[index]);
+        drawPath();
 
         addTravelDatas(result.routes[0].legs[0]);
     };
@@ -141,10 +152,13 @@ var createPath = function(index) {
     calculatePath(markers[index-1].getPosition(), markers[index].getPosition(), callback);
 };
 
-var drawPath = function(innerPath) {
-    var tpath = poly.getPath();
-    for (var i = 1; i < innerPath.length; i++) {
-        tpath.push(innerPath.getAt(i));
+var drawPath = function() {
+    var tpath = new google.maps.MVCArray();
+
+    for (var k in path) {
+        for (var i = 1; i < path[k].length; i++) {
+            tpath.push(path[k].getAt(i));
+        }
     }
     poly.setPath(tpath);
     poly.setMap(map);
@@ -201,7 +215,7 @@ var addTravelDatas = function(leg) {
     totalDurationUnitElement.innerHTML = totalDurationUnit;
 };
 
-// LISTENERS
+// (pseudo)listener
 var addPoint = function() {
     index++;
     createSearchBox(listPlaces, index);
@@ -213,6 +227,17 @@ var removePoint = function(element) {
         markers[id].setMap(null);
         markers.splice(id,1);
     }
+    debugger;
+
+    var callback = function(result, id) {
+        path[index] = buildPath(result);
+
+        drawPath();
+
+        addTravelDatas(result.routes[0].legs[0]);
+    };
+
+    calculatePath(markers[id-1].getPosition(), markers[id].getPosition(), callback);
     /*
     TODO: I M P O R T A N T ! ! Recalculate Path.
 
