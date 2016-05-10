@@ -100,11 +100,9 @@ var createMarker = function(place) {
 
 var updateBounds = function(place) {
     var bounds = new google.maps.LatLngBounds();
-    if (markers.length > 1) {
-        bounds = map.getBounds();
+    for (var k in markers) {
+        bounds.extend(markers[k].getPosition());
     }
-    bounds.extend(place.geometry.location);
-
     // set bounds
     map.fitBounds(bounds);
 };
