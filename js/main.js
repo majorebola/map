@@ -27,6 +27,8 @@ var initMap = function() {
         map: map
     });
 
+    MapManager.init(map);
+
     toolbar = document.getElementById('toolbar');
     listPlaces = document.getElementById('list-places');
 };
@@ -65,12 +67,9 @@ var addSearchBoxListenerChanged = function(searchBox) {
     });
 };
 
-var addMarkerAndCreatePath = function(place, index) {
+var addMarkerAndCreatePath = function(place) {
     // create the marker
-    markers[index] = createMarker(place);
-
-    // calculate bounds
-    updateBounds(place);
+    MapManager.addMarker(MapManager.createMarker(place));
 
     // calculate path
     if(markers.length > 1) {
@@ -78,22 +77,7 @@ var addMarkerAndCreatePath = function(place, index) {
     }
 };
 
-var createMarker = function(place) {
-    return new google.maps.Marker({
-        map: map,
-        title: place.name,
-        position: place.geometry.location
-    });
-};
 
-var updateBounds = function(place) {
-    var bounds = new google.maps.LatLngBounds();
-    for (var k in markers) {
-        bounds.extend(markers[k].getPosition());
-    }
-    // set bounds
-    map.fitBounds(bounds);
-};
 
 /**
  * Calculate Path between Start and End. calls a callback with the result (if OK)
@@ -194,11 +178,6 @@ var removePoint = function(element) {
     };
 
     calculatePath(markers[index-1].getPosition(), markers[index].getPosition(), index, callback);
-    /*
-    TODO: I M P O R T A N T ! ! Recalculate Path.
-
-    TODO: get previous and next path, delete them and calculate new path (from previous to next)
-    */
 };
 
 
