@@ -7,27 +7,15 @@ var toolbar;                // toolbar element where drawing searchboxes
 var listPlaces;             // searchBoxes container
 var searchBoxes = [];       // searchBoxes elements of google map
 
-var index;                  // an index, maybe useless
 var markers = [];           // markers elements of the google map
 var directionsService;      // directions Service for getting the path
 var path = {};              // path object (list) from google maps
 var poly;                   // polyline used for drawing the path
 
-
-// main data with all useful infos: marker, searchbox and path.
-var data = [
-    {
-        marker: {},
-        searchBox: {},
-        path: {}
-    }
-];
-
 var initMap = function() {
     console.log("initialization of everything");
     mapElement = document.getElementById('map');
 
-    index = -1;
     directionsService = new google.maps.DirectionsService();
     map = new google.maps.Map(mapElement, {
         center: {lat: 45.05, lng: 7.65},
@@ -112,9 +100,10 @@ var updateBounds = function(place) {
  * TODO: better handling of errors.
  * @param start
  * @param end
+ * @param index
  * @param callback
  */
-var calculatePath = function(start, end, callback) {
+var calculatePath = function(start, end, index, callback) {
     console.log("PANIC MONSTER");
     directionsService.route({
         origin: start,
@@ -122,6 +111,7 @@ var calculatePath = function(start, end, callback) {
         travelMode: google.maps.DirectionsTravelMode.DRIVING
     }, function(result, status) {
         if (status == google.maps.DirectionsStatus.OK) {
+            result.index = index;
             callback(result);
         } else {
             console.log("error");
@@ -143,11 +133,10 @@ var createPath = function(index) {
         path[index] = buildPath(result);
 
         drawPath();
-
-        addTravelDatas(result.routes[0].legs[0]);
+        DataManager.addTravelDatas(result.routes[0].legs[0]);
     };
 
-    calculatePath(markers[index-1].getPosition(), markers[index].getPosition(), callback);
+    calculatePath(markers[index-1].getPosition(), markers[index].getPosition(), index, callback);
 };
 
 var drawPath = function() {
@@ -162,80 +151,49 @@ var drawPath = function() {
     poly.setMap(map);
 };
 
-/*
-Big bad method that shows distances and duration.
-*/
-var addTravelDatas = function(leg) {
-    var totalDistanceElement = document.getElementById('total-distance');
-    var totalDurationElement = document.getElementById('total-duration');
-    var totalDistanceUnitElement = document.getElementById('total-distance-unit');
-    var totalDurationUnitElement = document.getElementById('total-duration-unit');
-
-    var totalDistance = parseFloat(totalDistanceElement.innerHTML);
-    var totalDuration = parseFloat(totalDurationElement.innerHTML);
-    var totalDistanceUnit = totalDistanceUnitElement.innerHTML;
-    var totalDurationUnit = totalDurationUnitElement.innerHTML;
-
-    var newDistance = leg.distance.value;
-    var newDuration = leg.duration.value;
-
-    if (totalDistanceUnit == 'km') {
-        newDistance /= 1000;
-    }
-    switch (totalDurationUnit) {
-        case 'hours':
-            newDuration /= 3600;
-            break;
-        case 'mins':
-            newDuration /= 60;
-            break;
-    }
-
-    totalDistance += newDistance;
-    totalDuration += newDuration;
-
-    if(totalDistance > 1000) {
-        totalDistance /= 1000;
-        totalDistanceUnit = "km";
-    }
-    if(totalDuration > 60 && totalDurationUnit == 'secs') {
-        totalDuration /= 60;
-        totalDurationUnit = "mins";
-    }
-    if(totalDuration > 60 && totalDurationUnit == 'mins') {
-        totalDuration /= 60;
-        totalDurationUnit = "hours";
-    }
-
-    totalDistanceElement.innerHTML = totalDistance.toFixed(2);
-    totalDurationElement.innerHTML = totalDuration.toFixed(2);
-    totalDistanceUnitElement.innerHTML = totalDistanceUnit;
-    totalDurationUnitElement.innerHTML = totalDurationUnit;
-};
 
 // (pseudo)listener
 var addPoint = function() {
-    index++;
-    createSearchBox(listPlaces, index);
+    // get the max index +1 for the new index
+    createSearchBox(listPlaces, getMaxSearchBoxIndex(searchBoxes)+1);
+};
+
+/**
+ * calculate actual max index of the searchBoxes.
+ * @param array
+ * @returns {number}
+ */
+var getMaxSearchBoxIndex = function(array) {
+    var max = -1;
+    for(var k in array) {
+        var i = array[k].index;
+        if (max < i) {
+            max = i;
+        }
+    }
+    return max;
 };
 var removePoint = function(element) {
-    var id = $(element).data('id');
-    $("#sbc-" + id).remove();
-    if (markers[id]) {
-        markers[id].setMap(null);
-        markers.splice(id,1);
+    var index = $(element).data('id');
+    $("#sbc-" + index).remove();
+    if (markers[index]) {
+        markers[index].setMap(null);
+        markers.splice(index,1);
     }
     debugger;
 
-    var callback = function(result, id) {
-        path[index] = buildPath(result);
+    delete path[index];
+    delete path[index-1];
+
+    var callback = function(result) {
+        path[result.index] = buildPath(result);
 
         drawPath();
 
         addTravelDatas(result.routes[0].legs[0]);
     };
 
-    calculatePath(markers[id-1].getPosition(), markers[id].getPosition(), callback);
+    calculatePath(markers[index-1].getPosition(), markers[index].getPosition(), index, callback);
     /*
     TODO: I M P O R T A N T ! ! Recalculate Path.
 
