@@ -1,3 +1,6 @@
+/**
+ * Singleton that handles the entire map-marker-path data structure.
+ */
 var MapManager = (function() {
     var self = this;
     var markers;
@@ -25,6 +28,7 @@ var MapManager = (function() {
         map = inputMap;
     };
 
+    // Not sure if useful, now for debug purpose only
     self.getMarkers = function() {
         return markers;
     };
@@ -48,10 +52,6 @@ var MapManager = (function() {
         updateBounds();
     };
 
-    // Not sure if useful, now for debug purpose only
-    self.getMarkers = function() {
-        return markers;
-    };
 
     return self;
 })();
