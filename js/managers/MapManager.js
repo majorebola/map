@@ -122,6 +122,7 @@ var MapManager = (function() {
 
     self.removeMarker = function(marker) {
         if(marker.previousMarker && marker.nextMarker) {
+            // Middle Point case: I have a previous and a next marker. I should recalculate the path
             marker.previousMarker.nextMarker = marker.nextMarker;
             marker.nextMarker.previousMarker = marker.previousMarker;
             var callback = function(result) {
@@ -130,6 +131,16 @@ var MapManager = (function() {
                 DataManager.addTravelDatas(result.routes[0].legs[0]);
             };
             calculatePath(marker.previousMarker.getPosition(), marker.nextMarker.getPosition(), callback);
+        } else if(marker.nextMarker) {
+            // First Point case: I have a next marker but not a previous one.
+            delete marker.nextMarker.previousMarker;
+            delete marker.pathToNextMarker;
+            drawPath();
+        } else if(marker.previousMarker) {
+            // Last Point case: I have a previous marker but not a next one.
+            delete marker.previousMarker.nextMarker;
+            delete marker.previousMarker.pathToNextMarker;
+            drawPath();
         }
         markers.splice(getMarkerIndex(marker), 1);
         marker.setMap(null);

@@ -19,30 +19,39 @@ body {
     width: 100%;
     display: flex;
     flex-direction: row; }
-    body #main-container #toolbar {
-      flex: 20;
-      height: 100vh; }
-      body #main-container #toolbar #list-places {
-        margin: 1em .5em 2em; }
-        body #main-container #toolbar #list-places .search-box-container {
-          display: flex;
-          flex-direction: row; }
-        body #main-container #toolbar #list-places .search-box {
-          background: transparent;
-          border: 0;
-          border-bottom: 1px solid darkCyan;
-          color: darkCyan;
-          font-family: Roboto-Medium;
-          line-height: 2em;
-          margin: .5em 0; }
-        body #main-container #toolbar #list-places .cross-delete {
-          background: url("imgs/cancel.svg") center no-repeat;
-          background-size: contain;
-          height: 2em;
-          right: 0;
-          width: 20px; }
-    body #main-container #map {
-      flex: 80;
-      height: 100vh; }
+
+#toolbar {
+  flex: 20;
+  height: 100vh; }
+  #toolbar #list-places {
+    margin: 1em .5em 2em; }
+    #toolbar #list-places .search-box-container {
+      display: flex;
+      flex-direction: row; }
+    #toolbar #list-places .search-box {
+      background: transparent;
+      border: 0;
+      border-bottom: 1px solid darkCyan;
+      color: darkCyan;
+      font-family: Roboto-Medium;
+      line-height: 2em;
+      margin: .5em 0; }
+    #toolbar #list-places .cross-delete {
+      background: url("imgs/cancel.svg") center no-repeat;
+      background-size: contain;
+      height: 2em;
+      right: 0;
+      width: 20px; }
+
+#map {
+  flex: 80;
+  height: 100vh; }
+
+#floating-info {
+  bottom: 20px;
+  position: absolute;
+  right: 50px;
+  text-align: center;
+  z-index: 5; }
 
 /*# sourceMappingURL=style.css.map */

@@ -10,38 +10,46 @@ body {
     height: 100vh;
     width: 100%;
     @include flex(row);
+  }
+}
 
-    #toolbar {
-      flex: 20;
-      height: 100vh;
+#toolbar {
+  flex: 20;
+  height: 100vh;
 
-      #list-places {
-        margin: 1em .5em 2em;
+  #list-places {
+    margin: 1em .5em 2em;
 
-        .search-box-container {
-          @include flex(row);
-        }
-        .search-box {
-          background: transparent;
-          border: 0;
-          border-bottom: 1px solid $style-color;
-          color: $style-color;
-          font-family: $font-subtitle;
-          line-height: $search-box-height;
-          margin: .5em 0;
-        }
-        .cross-delete {
-          background: url('imgs/cancel.svg') center no-repeat;
-          background-size: contain;
-          height: $search-box-height;
-          right: 0;
-          width: 20px;
-        }
-      }
+    .search-box-container {
+      @include flex(row);
     }
-    #map {
-      flex: 80;
-      height: 100vh;
+    .search-box {
+      background: transparent;
+      border: 0;
+      border-bottom: 1px solid $style-color;
+      color: $style-color;
+      font-family: $font-subtitle;
+      line-height: $search-box-height;
+      margin: .5em 0;
+    }
+    .cross-delete {
+      background: url('imgs/cancel.svg') center no-repeat;
+      background-size: contain;
+      height: $search-box-height;
+      right: 0;
+      width: 20px;
     }
   }
+}
+#map {
+  flex: 80;
+  height: 100vh;
+}
+
+#floating-info {
+  bottom: 20px;
+  position: absolute;
+  right: 50px;
+  text-align: center;
+  z-index: 5;
 }
