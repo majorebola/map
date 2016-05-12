@@ -56,10 +56,14 @@ var addSearchBoxListenerChanged = function(searchBox) {
 };
 
 var addMarkerAndCreatePath = function(place, searchBox) {
-    var marker = MapManager.createMarker(place);
-    marker.searchBox = searchBox;
-    searchBox.marker = marker;
-    MapManager.addMarker(marker);
+    if (searchBox.marker) {
+        MapManager.updateMarker(searchBox.marker, place);
+    } else {
+        var marker = MapManager.createMarker(place);
+        marker.searchBox = searchBox;
+        searchBox.marker = marker;
+        MapManager.addMarker(marker);
+    }
 };
 
 // (pseudo)listener

@@ -120,6 +120,31 @@ var MapManager = (function() {
         }
     };
 
+    self.updateMarker = function(marker, newPlace) {
+        marker.setPosition(newPlace.geometry.location);
+        var firstCallback = function(result) {
+            marker.previousMarker.pathToNextMarker = buildPath(result);
+            drawPath();
+            DataManager.addTravelDatas(result.routes[0].legs[0]);
+        };
+        var lastCallback = function(result) {
+            marker.pathToNextMarker = buildPath(result);
+            drawPath();
+            DataManager.addTravelDatas(result.routes[0].legs[0]);
+        };
+        if(marker.previousMarker && marker.nextMarker) {
+            // Middle Point case: recalculate path
+            calculatePath(marker.previousMarker.getPosition(), marker.getPosition(), firstCallback);
+            calculatePath(marker.getPosition(), marker.nextMarker.getPosition(), lastCallback);
+        } else if (marker.previousMarker) {
+            // Last Point case
+            calculatePath(marker.previousMarker.getPosition(), marker.getPosition(), firstCallback);
+        } else if (marker.nextMarker) {
+            // First Point case
+            calculatePath(marker.getPosition(), marker.nextMarker.getPosition(), lastCallback);
+        }
+    };
+
     self.removeMarker = function(marker) {
         if(marker.previousMarker && marker.nextMarker) {
             // Middle Point case: I have a previous and a next marker. I should recalculate the path
