@@ -4,6 +4,7 @@
  * Each marker has a previous and a next marker. So each remove, add or update SHOULD absolutely update previousMarker and NextMarker
  * There is also an array (markers) which is used to cycle through all marker available. So this also should be updated for each crud operation
  * If there is a nextMarker, a marker has also an extremely important pathToNextMarker representing the path (given by Gmaps API) to the next marker
+ * pathToNextMarker now is splitted in path (the real path) and info (metadata Useful for getting distances)
  *
  */
 var MapManager = (function() {
@@ -12,6 +13,7 @@ var MapManager = (function() {
     var map;                        // THE GMAP
     var directionsService;          // GMAP Direction Services
     var poly;                       // polyline used to draw the routes
+    var metaInfo = {};                   // metaInfo of total routes length
 
     var getLastMarker = function() {
         if(markers.length > 0) {
@@ -31,23 +33,69 @@ var MapManager = (function() {
     };
 
     var buildPath = function(result) {
+        var path = {};
         var innerPath = new google.maps.MVCArray();
         for (var i = 0, len = result.routes[0].overview_path.length; i < len; i++) {
             innerPath.push(result.routes[0].overview_path[i]);
         }
-        return innerPath;
+        path.path = innerPath;
+        path.data = buildData(result);
+        return path;
+    };
+
+    var buildData = function(result) {
+        var leg = result.routes[0].legs[0];
+        return {
+            distance: leg.distance.value,
+            duration: leg.duration.value
+        }
+    };
+
+    var resetMetaInfo = function() {
+        metaInfo.distance = 0;
+        metaInfo.duration = 0;
+        metaInfo.distanceUnit = "m";
+        metaInfo.durationUnit = "secs";
+    };
+
+    var updateMetaInfoText = function() {
+        var distanceKm = metaInfo.distance / 1000;
+        if(distanceKm > 1) {
+            metaInfo.distanceText = distanceKm + "km ";
+        } else {
+            metaInfo.distanceText = metaInfo.distance + "m";
+        }
+
+        var durationMinutes = metaInfo.duration / 60;
+        var durationSeconds = metaInfo.duration % 60;
+        if (durationMinutes > 1) {
+            if (durationMinutes < 60) {
+                metaInfo.durationText = Math.floor(durationMinutes) + "." + durationSeconds;
+            } else {
+                var durationHours = durationMinutes / 60;
+                durationMinutes = durationMinutes % 60;
+                metaInfo.durationText = Math.floor(durationHours) + ":" + Math.floor(durationMinutes);
+            }
+        } else {
+            metaInfo.durationText = metaInfo.duration + " secs";
+        }
+        DataManager.updateDataInfo(metaInfo);
     };
 
     var drawPath = function() {
         var tpath = new google.maps.MVCArray();
+        resetMetaInfo();
 
         for (var k in markers) {
             if (markers.hasOwnProperty(k) && markers[k].pathToNextMarker) {
-                for (var i = 0; i < markers[k].pathToNextMarker.length; i++) {
-                    tpath.push(markers[k].pathToNextMarker.getAt(i));
+                for (var i = 0; i < markers[k].pathToNextMarker.path.length; i++) {
+                    tpath.push(markers[k].pathToNextMarker.path.getAt(i));
                 }
+                metaInfo.distance += markers[k].pathToNextMarker.data.distance;
+                metaInfo.duration += markers[k].pathToNextMarker.data.duration;
             }
         }
+        updateMetaInfoText();
         poly.setPath(tpath);
         poly.setMap(map);
     };
@@ -86,6 +134,10 @@ var MapManager = (function() {
         });
     };
 
+    self.getMetaInfo = function() {
+        return metaInfo;
+    };
+
     // Not sure if useful, now for debug purpose only
     self.getMarkers = function() {
         return markers;
@@ -114,7 +166,6 @@ var MapManager = (function() {
             var callback = function(result) {
                 previousMarker.pathToNextMarker = buildPath(result);
                 drawPath();
-                DataManager.addTravelDatas(result.routes[0].legs[0]);
             };
             calculatePath(previousMarker.getPosition(), marker.getPosition(), callback);
         }
@@ -125,12 +176,10 @@ var MapManager = (function() {
         var firstCallback = function(result) {
             marker.previousMarker.pathToNextMarker = buildPath(result);
             drawPath();
-            DataManager.addTravelDatas(result.routes[0].legs[0]);
         };
         var lastCallback = function(result) {
             marker.pathToNextMarker = buildPath(result);
             drawPath();
-            DataManager.addTravelDatas(result.routes[0].legs[0]);
         };
         if(marker.previousMarker && marker.nextMarker) {
             // Middle Point case: recalculate path
@@ -153,7 +202,6 @@ var MapManager = (function() {
             var callback = function(result) {
                 marker.previousMarker.pathToNextMarker = buildPath(result);
                 drawPath();
-                DataManager.addTravelDatas(result.routes[0].legs[0]);
             };
             calculatePath(marker.previousMarker.getPosition(), marker.nextMarker.getPosition(), callback);
         } else if(marker.nextMarker) {
