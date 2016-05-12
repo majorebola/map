@@ -22,7 +22,8 @@ body {
 
 #toolbar {
   flex: 20;
-  height: 100vh; }
+  height: 100vh;
+  min-width: 200px; }
   #toolbar #list-places {
     margin: 1em .5em 2em; }
     #toolbar #list-places .search-box-container {
@@ -35,13 +36,23 @@ body {
       color: darkCyan;
       font-family: Roboto-Medium;
       line-height: 2em;
-      margin: .5em 0; }
+      margin: .5em 0;
+      min-width: 150px; }
     #toolbar #list-places .cross-delete {
       background: url("imgs/cancel.svg") center no-repeat;
       background-size: contain;
       height: 2em;
       right: 0;
       width: 20px; }
+  #toolbar #add-place {
+    background: darkcyan;
+    border: 0;
+    border-radius: 1px;
+    box-shadow: 1px 1px 1px 0 #222;
+    font-family: Roboto-Regular;
+    margin: 3px 10px;
+    padding: 5px 25px;
+    text-transform: uppercase; }
 
 #map {
   flex: 80;

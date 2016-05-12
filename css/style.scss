@@ -16,6 +16,7 @@ body {
 #toolbar {
   flex: 20;
   height: 100vh;
+  min-width: $min-width-toolbar + 50;
 
   #list-places {
     margin: 1em .5em 2em;
@@ -31,6 +32,7 @@ body {
       font-family: $font-subtitle;
       line-height: $search-box-height;
       margin: .5em 0;
+      min-width: $min-width-toolbar;
     }
     .cross-delete {
       background: url('imgs/cancel.svg') center no-repeat;
@@ -39,6 +41,16 @@ body {
       right: 0;
       width: 20px;
     }
+  }
+  #add-place {
+    background: darkcyan;
+    border: 0;
+    border-radius: 1px;
+    box-shadow: 1px 1px 1px 0 $main-color;
+    font-family: $font-stack;
+    margin: 3px 10px;
+    padding: 5px 25px;
+    text-transform: uppercase;
   }
 }
 #map {

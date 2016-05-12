@@ -9,5 +9,8 @@ $font-quote: Roboto-Thin;
 $darker-bg: darken($bg-color, 70%);
 $lighter-color: lighten($main-color, 70%);
 
+$min-width-toolbar: 150px;
+
 // search-box line height and icon height. Defines the height of all the searchboxes added
+
 $search-box-height: 2em;
