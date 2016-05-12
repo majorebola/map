@@ -1,12 +1,17 @@
 /**
  * Singleton that handles the entire map-marker-path data structure.
+ * uses a List of markers.
+ * Each marker has a previous and a next marker. So each remove, add or update SHOULD absolutely update previousMarker and NextMarker
+ * There is also an array (markers) which is used to cycle through all marker available. So this also should be updated for each crud operation
+ * If there is a nextMarker, a marker has also an extremely important pathToNextMarker representing the path (given by Gmaps API) to the next marker
+ *
  */
 var MapManager = (function() {
     var self = this;
-    var markers;
-    var map;
-    var directionsService;
-    var poly;
+    var markers;                    // array of markers. Must be updated for each add, update or delete
+    var map;                        // THE GMAP
+    var directionsService;          // GMAP Direction Services
+    var poly;                       // polyline used to draw the routes
 
     var getLastMarker = function() {
         if(markers.length > 0) {
@@ -128,6 +133,7 @@ var MapManager = (function() {
         }
         markers.splice(getMarkerIndex(marker), 1);
         marker.setMap(null);
+        updateBounds();
     };
 
     var getMarkerIndex = function(marker) {
