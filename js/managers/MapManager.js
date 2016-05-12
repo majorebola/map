@@ -51,51 +51,20 @@ var MapManager = (function() {
         }
     };
 
-    var resetMetaInfo = function() {
-        metaInfo.distance = 0;
-        metaInfo.duration = 0;
-        metaInfo.distanceUnit = "m";
-        metaInfo.durationUnit = "secs";
-    };
-
-    var updateMetaInfoText = function() {
-        var distanceKm = metaInfo.distance / 1000;
-        if(distanceKm > 1) {
-            metaInfo.distanceText = distanceKm + "km ";
-        } else {
-            metaInfo.distanceText = metaInfo.distance + "m";
-        }
-
-        var durationMinutes = metaInfo.duration / 60;
-        var durationSeconds = metaInfo.duration % 60;
-        if (durationMinutes > 1) {
-            if (durationMinutes < 60) {
-                metaInfo.durationText = Math.floor(durationMinutes) + "." + durationSeconds;
-            } else {
-                var durationHours = durationMinutes / 60;
-                durationMinutes = durationMinutes % 60;
-                metaInfo.durationText = Math.floor(durationHours) + ":" + Math.floor(durationMinutes);
-            }
-        } else {
-            metaInfo.durationText = metaInfo.duration + " secs";
-        }
-        DataManager.updateDataInfo(metaInfo);
-    };
-
     var drawPath = function() {
         var tpath = new google.maps.MVCArray();
-        resetMetaInfo();
+        DataManager.newMetaInfo();
 
         for (var k in markers) {
             if (markers.hasOwnProperty(k) && markers[k].pathToNextMarker) {
                 for (var i = 0; i < markers[k].pathToNextMarker.path.length; i++) {
                     tpath.push(markers[k].pathToNextMarker.path.getAt(i));
                 }
-                metaInfo.distance += markers[k].pathToNextMarker.data.distance;
-                metaInfo.duration += markers[k].pathToNextMarker.data.duration;
+                DataManager.addDistance(markers[k].pathToNextMarker.data.distance);
+                DataManager.addDuration(markers[k].pathToNextMarker.data.duration);
             }
         }
-        updateMetaInfoText();
+        DataManager.updateMetaInfoText();
         poly.setPath(tpath);
         poly.setMap(map);
     };
