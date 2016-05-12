@@ -17,27 +17,45 @@ var DataManager = (function() {
         metaInfo.duration += newDuration;
     };
 
-    this.updateMetaInfoText = function() {
-        var distanceKm = metaInfo.distance / 1000;
-        if(distanceKm > 1) {
-            metaInfo.distanceText = distanceKm + "km ";
-        } else {
-            metaInfo.distanceText = metaInfo.distance + "m";
-        }
+    this.updateInnerInfo = function(marker) {
+        var distanceText = generateDistanceText(marker.pathToNextMarker.data.distance);
+        var durationText = generateDurationText(marker.pathToNextMarker.data.duration);
 
-        var durationMinutes = metaInfo.duration / 60;
-        var durationSeconds = metaInfo.duration % 60;
+        marker.pathMetaInfoElement.html(distanceText + "<span class='down-arrow-icon'></span>" + durationText);
+    };
+
+    var generateDurationText = function(duration) {
+        var durationText;
+        var durationMinutes = duration / 60;
+        var durationSeconds = duration % 60;
         if (durationMinutes > 1) {
             if (durationMinutes < 60) {
-                metaInfo.durationText = Math.floor(durationMinutes) + "." + durationSeconds;
+                durationText = Math.floor(durationMinutes) + "." + durationSeconds;
             } else {
                 var durationHours = durationMinutes / 60;
                 durationMinutes = durationMinutes % 60;
-                metaInfo.durationText = Math.floor(durationHours) + ":" + Math.floor(durationMinutes);
+                durationText = Math.floor(durationHours) + ":" + Math.floor(durationMinutes);
             }
         } else {
-            metaInfo.durationText = metaInfo.duration + " secs";
+            durationText = duration + " secs";
         }
+        return durationText;
+    };
+
+    var generateDistanceText = function(distance) {
+        var distanceText;
+        var distanceKm = distance / 1000;
+        if(distanceKm > 1) {
+            distanceText = distanceKm + "km ";
+        } else {
+            distanceText = metaInfo.distance + "m";
+        }
+        return distanceText;
+    };
+
+    this.updateMetaInfoText = function() {
+        metaInfo.distanceText = generateDistanceText(metaInfo.distance);
+        metaInfo.durationText = generateDurationText(metaInfo.duration);
         updateDataInfo(metaInfo);
     };
 

@@ -62,6 +62,7 @@ var MapManager = (function() {
                 }
                 DataManager.addDistance(markers[k].pathToNextMarker.data.distance);
                 DataManager.addDuration(markers[k].pathToNextMarker.data.duration);
+                DataManager.updateInnerInfo(markers[k]);
             }
         }
         DataManager.updateMetaInfoText();

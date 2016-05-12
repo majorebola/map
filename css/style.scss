@@ -41,6 +41,10 @@ body {
       right: 0;
       width: 20px;
     }
+    .path-info-data {
+      @include flex(row);
+      @include flex-space-center();
+    }
   }
   #add-place {
     background: darkcyan;
@@ -53,9 +57,18 @@ body {
     text-transform: uppercase;
   }
 }
+
 #map {
   flex: 80;
   height: 100vh;
+}
+
+.down-arrow-icon {
+  background: url('imgs/down-arrow.svg') center no-repeat;
+  background-size: contain;
+  height: $search-box-height;
+  right: 0;
+  width: 20px;
 }
 
 #floating-info {

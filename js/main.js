@@ -36,9 +36,10 @@ var createSearchBox = function(parent) {
         $(parent).append(html);
 
         var input = document.getElementById("sb-" + id);
-        input.searchBox = new google.maps.places.SearchBox(input);
-
-        addSearchBoxListenerChanged(input.searchBox);
+        var searchBox = new google.maps.places.SearchBox(input);
+        searchBox.input = input;
+        input.searchBox = searchBox;
+        addSearchBoxListenerChanged(searchBox);
     });
 };
 
@@ -61,6 +62,8 @@ var addMarkerAndCreatePath = function(place, searchBox) {
     } else {
         var marker = MapManager.createMarker(place);
         marker.searchBox = searchBox;
+        // TODO: I don't like this very much
+        marker.pathMetaInfoElement = $(searchBox.input).closest('.marker-container').find('.path-info-data');
         searchBox.marker = marker;
         MapManager.addMarker(marker);
     }
@@ -72,11 +75,10 @@ var addPoint = function() {
 };
 
 var removePoint = function(element) {
-    //$(element).siblings('.search-box')[0].searchBox.marker.previousMarker.pathToNextMarker
     var $element = $(element);
     var searchBox = $element.siblings('.search-box')[0].searchBox;
     MapManager.removeMarker(searchBox.marker);
-    $element.parent().remove();
+    $element.closest('.marker-container').remove();
 };
 
 

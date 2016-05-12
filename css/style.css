@@ -44,6 +44,11 @@ body {
       height: 2em;
       right: 0;
       width: 20px; }
+    #toolbar #list-places .path-info-data {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      align-items: center; }
   #toolbar #add-place {
     background: darkcyan;
     border: 0;
@@ -57,6 +62,13 @@ body {
 #map {
   flex: 80;
   height: 100vh; }
+
+.down-arrow-icon {
+  background: url("imgs/down-arrow.svg") center no-repeat;
+  background-size: contain;
+  height: 2em;
+  right: 0;
+  width: 20px; }
 
 #floating-info {
   bottom: 20px;
