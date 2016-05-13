@@ -70,6 +70,13 @@ body {
   right: 0;
   width: 20px; }
 
+.vertical-drag-icon {
+  background: url("imgs/expand.svg") center no-repeat;
+  background-size: contain;
+  height: 2em;
+  right: 0;
+  width: 20px; }
+
 #floating-info {
   bottom: 20px;
   position: absolute;

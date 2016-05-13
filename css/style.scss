@@ -71,6 +71,14 @@ body {
   width: 20px;
 }
 
+.vertical-drag-icon {
+  background: url('imgs/expand.svg') center no-repeat;
+  background-size: contain;
+  height: $search-box-height;
+  right: 0;
+  width: 20px;
+}
+
 #floating-info {
   bottom: 20px;
   position: absolute;
