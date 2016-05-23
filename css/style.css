@@ -23,9 +23,10 @@ body {
 #toolbar {
   flex: 20;
   height: 100vh;
-  min-width: 200px; }
+  min-width: 200px;
+  overflow: auto; }
   #toolbar #list-places {
-    margin: 1em .5em 2em; }
+    margin: 1em 0; }
     #toolbar #list-places .search-box-container {
       display: flex;
       flex-direction: row; }
@@ -83,5 +84,8 @@ body {
   right: 50px;
   text-align: center;
   z-index: 5; }
+
+.marker-container:hover {
+  background-color: rgba(255, 255, 255, 0.3); }
 
 /*# sourceMappingURL=style.css.map */

@@ -17,9 +17,10 @@ body {
   flex: 20;
   height: 100vh;
   min-width: $min-width-toolbar + 50;
+  overflow: auto;
 
   #list-places {
-    margin: 1em .5em 2em;
+    margin: 1em 0;
 
     .search-box-container {
       @include flex(row);
@@ -85,4 +86,11 @@ body {
   right: 50px;
   text-align: center;
   z-index: 5;
+}
+
+.marker-container {
+
+  &:hover {
+    background-color: rgba(255,255,255, 0.3);
+  }
 }
