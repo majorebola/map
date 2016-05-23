@@ -1,7 +1,11 @@
 <script type="text/template" id="search-box-template">
     <div class="marker-container">
         <div class="search-box-container" id="sbc-{{id}}">
-            {{id}}:
+            <div class="vertical-drag-icon">
+                <svg viewBox="0 0 32 32">
+                    <use xlink:href="#icon-phone"></use>
+                </svg>
+            </div>
             <input type="text" placeholder="Search Box" class="search-box" id="sb-{{id}}">
             <div class="cross-delete" onclick="removePoint(this)" data-id="{{id}}"></div>
         </div>

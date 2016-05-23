@@ -21,6 +21,8 @@ var initMap = function() {
 
     toolbar = document.getElementById('toolbar');
     listPlaces = document.getElementById('list-places');
+
+    enableSorting(listPlaces);
 };
 
 var createSearchBox = function(parent) {
@@ -58,7 +60,7 @@ var addSearchBoxListenerChanged = function(searchBox) {
 
 var addMarkerAndCreatePath = function(place, searchBox) {
     if (searchBox.marker) {
-        MapManager.updateMarker(searchBox.marker, place);
+        MapManager.updateMarker(searchBox.marker, place.geometry.location);
     } else {
         var marker = MapManager.createMarker(place);
         marker.searchBox = searchBox;
@@ -67,6 +69,24 @@ var addMarkerAndCreatePath = function(place, searchBox) {
         searchBox.marker = marker;
         MapManager.addMarker(marker);
     }
+};
+
+var enableSorting = function(div) {
+
+
+    var sortable = new Sortable(div, {
+        // dragging ended
+        onEnd: function (/**Event*/evt) {
+            evt.oldIndex;  // element's old index within parent
+            evt.newIndex;  // element's new index within parent
+
+            var $new = $(evt.from.children[evt.newIndex]).find('.search-box');
+            var $old = $(evt.from.children[evt.oldIndex]).find('.search-box');
+
+            MapManager.swap($new[0].searchBox.marker, $old[0].searchBox.marker)
+        },
+        handle: '.vertical-drag-icon'
+    });
 };
 
 // (pseudo)listener

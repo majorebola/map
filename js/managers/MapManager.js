@@ -63,6 +63,8 @@ var MapManager = (function() {
                 DataManager.addDistance(markers[k].pathToNextMarker.data.distance);
                 DataManager.addDuration(markers[k].pathToNextMarker.data.duration);
                 DataManager.updateInnerInfo(markers[k]);
+            } else if(markers.hasOwnProperty(k)) {
+                markers[k].pathMetaInfoElement.html('');
             }
         }
         DataManager.updateMetaInfoText();
@@ -141,8 +143,9 @@ var MapManager = (function() {
         }
     };
 
-    self.updateMarker = function(marker, newPlace) {
-        marker.setPosition(newPlace.geometry.location);
+    self.updateMarker = function(marker, newPlace, newPath) {
+        marker.setPosition(newPlace);
+        var readyToCall = false;
         var firstCallback = function(result) {
             marker.previousMarker.pathToNextMarker = buildPath(result);
             drawPath();
@@ -162,6 +165,25 @@ var MapManager = (function() {
             // First Point case
             calculatePath(marker.getPosition(), marker.nextMarker.getPosition(), lastCallback);
         }
+    };
+
+
+    // Holy Crap what a creepy function
+    self.swap = function(a, b) {
+        var aPosition = new google.maps.LatLng(a.getPosition().lat(), a.getPosition().lng());
+        var bPosition = new google.maps.LatLng(b.getPosition().lat(), b.getPosition().lng());
+
+        // var aPath = a.pathToNextMarker == null ? undefined : $.extend(true, {}, a.pathToNextMarker);
+        // var bPath = b.pathToNextMarker == null ? undefined : $.extend(true, {}, b.pathToNextMarker);
+        //
+        // a.pathToNextMarker = bPath;
+        // b.pathToNextMarker = aPath;s
+
+        // simply swap marker position.
+        self.updateMarker(a, bPosition);
+        self.updateMarker(b, aPosition);
+
+
     };
 
     self.removeMarker = function(marker) {
